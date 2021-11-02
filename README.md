@@ -1,1 +1,1 @@
-# git_example_1
+# Kubernetes examples files
