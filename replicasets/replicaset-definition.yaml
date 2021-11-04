@@ -1,0 +1,51 @@
+#ReplicaSet ensures that desired number of PODs always run
+#How to scale replicaset 
+
+#Update the number of replica on the yaml file
+#then run the kubectl replace to specify the same file
+#kubectl replace -f yamlfilename.yaml
+
+# Or use scale command
+# kubectl scale --replicas=6 -f yamlfilename.yaml
+
+# Use kubectl create -f yamlname to create any object
+#this object could be pod, replicaset or deployment
+#kubectl scale replicasetname --replicas=6
+#kubectl get replicaset
+
+#This delete the replicaset with all underlying PODs
+#kubectl delete replicaset nameofthereplica 
+
+#scale the replicas with the command
+# kubectl replace -f yamlfilename.yaml
+#kubectl scale --replicas=6 -f yamlfilename.yaml
+
+
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: myapp-rc
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx
+        ports:
+        - containerPort: 80
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end #This key value must match with the pod labels key value
+      #for examle they both has type: front-end 
+      
+

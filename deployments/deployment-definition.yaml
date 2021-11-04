@@ -1,0 +1,36 @@
+#After the create the deploymentyaml file use the command
+#kubectl create -f deploymentyaml
+#kubectl get deployment
+#kubectl get rs
+#kubectl get pods
+
+#To see all pods, replicaset, deployment use 
+# kubectl get all 
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-rc
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx
+        ports:
+        - containerPort: 80
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end #This key value must match with the pod labels key value
+      #for examle they both has type: front-end 
+      
+
