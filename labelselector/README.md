@@ -1,11 +1,11 @@
 Under the cluster, there are many pods, services, ReplicaSets, Deployments, etc. For Kubernetes, all of these are different objects in our cluster. Then we will need a way to filter and view different objects.
 
 Objelere etiket tanımlama.
-
+<code> 
 $ kubectl label "obje_tipi" "obje_ismi" "anahtar=değer"
 
 Ör: kubectl label pods pod9 app=thirdapp
-
+</code>
 Objelerden etiket kaldırma.
 
 $ kubectl label "obje_tipi" "obje_ismi" "anahtar-"
