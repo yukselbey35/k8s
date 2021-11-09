@@ -1,0 +1,1 @@
+Under the cluster, there are many pods, services, ReplicaSets, Deployments, etc. For Kubernetes, all of these are different objects in our cluster. Then we will need a way to filter and view different objects.

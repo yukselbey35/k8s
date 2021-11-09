@@ -1,0 +1,25 @@
+#what is the purpose of binding
+# Already created a pod to re-schedule to another node
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    name: nginx
+  name: nginx
+spec:
+  nodeName: node01
+  containers:
+  -  image: nginx
+     name: nginx
+
+---
+
+apiVersion: v1
+kind: Binding
+metadata:
+  name: nginx
+target:
+  apiVersion: v1
+  kind: Node
+  name: node02

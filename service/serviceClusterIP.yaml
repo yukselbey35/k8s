@@ -5,7 +5,8 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: backend
+    app: myapp-service-backend
+    type: backend
   ports:
     - protocol: TCP
       port: 5000
