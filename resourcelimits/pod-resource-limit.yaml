@@ -1,3 +1,33 @@
+---
+# how to configure default memory requests and limits for a namespace.
+# use a LimitRange yaml file.
+# In the previous lecture, I said – “When a pod is created the containers are assigned a default CPU request of .5 and memory of 256Mi”. For the POD to pick up those defaults you must have first set those as default values for request and limit by creating a LimitRange in that namespace.
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: mem-limit-range
+spec:
+  limits:
+  - default:
+      memory: 512Mi
+    defaultRequest:
+      memory: 256Mi
+    type: Container
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: cpu-limit-range
+spec:
+  limits:
+  - default:
+      cpu: "1"
+    defaultRequest:
+      cpu: "0.5"
+    type: Container
+
+
+---
 # Here's an example. The following Pod has two Containers. 
 # Each Container has a request of 0.25 cpu and 64MiB (226 bytes) of memory. 
 # Each Container has a limit of 0.5 cpu and 128MiB of memory. 
