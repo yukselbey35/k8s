@@ -1,0 +1,9 @@
+#kubectl create configmap name-configmap --from-literal=key=value
+#kubectl create configmap app-config --from-literal=configure-pod-container=change_color
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data: 
+  APP_COLOR: blue
+  APP_MODE: prod
