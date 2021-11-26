@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Config
+clusters:
+- cluster:
+    certificate-authority: ca.crt
+    server: https://my-kube-playgroud:6443
+  name: my-kube-playgroud
+contexts:
+- context:
+    cluster: my-kube-playgroud
+    namespace: frontend
+    user: my-kube-admin
+  name: my-kube-admin@my-kube-playgroud
+# current-context: dev-frontend
+# preferences: {}
+users:
+- name: my-kube-admin
+  user:
+    client-certificate: admin.crt
+    client-key: admin.key
