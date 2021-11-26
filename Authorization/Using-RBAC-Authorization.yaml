@@ -1,0 +1,10 @@
+# Role-based access control (RBAC) is a method of regulating access to computer or network resources based on the roles of individual users within your organization.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: pod-reader
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
