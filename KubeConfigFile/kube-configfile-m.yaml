@@ -1,0 +1,25 @@
+#Suppose you have two clusters, one for development work and one for scratch work. 
+apiVersion: v1
+kind: Config
+current-context: dev-frontend
+preferences: {}
+
+clusters:
+- cluster:
+  name: development
+- cluster:
+  name: dev-frontend
+- cluster:
+  name: scratch
+
+users:
+- name: developer
+- name: experimenter
+
+contexts:
+- context:
+  name: dev-frontend
+- context:
+  name: dev-storage
+- context:
+  name: exp-scratch
