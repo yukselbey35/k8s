@@ -1,0 +1,10 @@
+---RBAC----
+kubectl create role developer --namespace=default --verb=list,create,delete --resource=pods
+kubectl create rolebinding dev-user-binding --namespace=default --role=developer --user=dev-user
+kubectl get clusterroles --no-headers | wc -l
+kubectl get clusterrolebindings --no-headers | wc -l
+kubectl get roles --all-namespaces --n--headers | wc -l #calls all roles with namespaces of numbers
+kubectl get roles -A #calls all roles
+kubectl describe role <roleName>
+kubectl describe role <name of role>
+kubectl describe rolebinding <name of rolebinding>
