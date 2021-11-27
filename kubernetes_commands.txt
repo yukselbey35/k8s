@@ -1,0 +1,197 @@
+--------
+#what if you have been a user would like to see if have
+access to a particular resources in the cluster.
+kubectl auth can-i create deployments #You can use auth can-i command then and you can create deployment
+kubectl auth can-i delete nodes# or delete command,you can delete node
+kubectl auth can-i create deployments --as dev-user
+kubectl auth can-i create pods --as dev-user
+kubectl auth can-i create pods --as dev-user --namespace test #specify the namespace The dev-user does not have permission to create a pod in the test namespace.
+--------api-resources-----
+kubectl api-resources --namespaced=true
+kubectl api-resources --namespaced=false
+kube-apiserver -h | grep enable-admission-plugins # you'll see a list of admission controllers that are enabled by default
+grep enable-admission-plugins /etc/kubernetes/manifests/kube-apiserver.yaml
+ps -ef | grep kube-apiserver | grep admission-plugins
+
+
+----kubeadm-----
+apt-get upgrade -y kubeadm=1.12.0-00
+kubeadm upgrade plan
+kubeadm upgrade apply
+kubeadm upgrade node config --kubelet-version v1.12.0
+systemctl restart kubelet
+kubectl drain node-1 # if node is down and not coming back kubernetes will kill that pods and recreate in the an other node  our pods
+means node is not scheduled that you can run your pod in that pod
+the node is also cordoned or marked as unschedulable.
+kubectl cordon node-2# means make marks an existed  node unschedulable
+kubectl uncordon node-1#means we can make unmarked you can schedule
+if node is down and not coming back kubernetes will kill that pods and recreate in the an other node  our pods
+kubectl drain node01 --ignore-daemonsets
+cat /etc/kubernetes/manifests/kube-apiserver.yaml #that wat you can see your all certificate
+openssl genrsa -out jane.key 2048 #create a key for 2. admin
+openssl req -new -key jane.key -subj "/CN=jane" -out jane
+
+----serviceaccount----(uses for machine like Jenkins or Prometheus)
+kubectl create serviceaccount dashboard-sa
+kubectl get serviceaccount
+kubectl describe serviceaccount dashboard-sa
+kubectl describe secret dashboard-sa-token-kbbdm#inspect your secret token
+kubeectl exec -it my-kubernetes-dashboard ls /var/run/secrets/kubernetes.io/serviceaccount
+serviceaccountPath=/var/run/secrets/kubernetes.io/serviceaccount
+
+
+kubectl create namespace dev
+kubectl create deployment <deployment name> —image=<image name> —namespace=<namespace name> —replicas=<number of the replicas>
+kubectl create -d replicaset-definition.yaml
+kubectl create -f pod-defination.yaml --namespace=dev
+kubectl create configmap webapp-config-map —from-literal=APP_COLOR=darkblue
+kubectl create secret generic app-secret --from-literal=DB_Host=mysql #for default usuername and Password
+kubectl create secret generic app-secret --from-literal=DB_Host=mysql --from-literal=DE_User=root --from-literal=DB_Passwoed=passwd
+kubectl create ingress <ingress-name> --rule="host/path=service:port"
+kubectl create configmap nginx-configuration --namespace ingress-space
+
+---------
+kubectl config view #checks in the config file
+kubectl config view --kubeconfig=my-custom-config
+kubectl config use-context prod-user@production#update current context 
+--------
+kubectl cluster set-context --context --namespace<insert namespace name>
+--------
+kubectl delete job <pod name>
+kubectl delete replicaset my app-replicase
+--------
+kubectl describe secret dashboard-sa-token-kbbm
+kubectl describe node kubemaster | grep Taint #shows taint of master node
+
+kubectl describe networkpolicy
+
+kubectl describe pod kube-apiserver-controlplane -n kube-system
+kubectl describe rolebinding kube-proxy -n kube-system
+kubectl describe daemonset kube-proxy --namespace=kube-system
+kubectl describe configmap
+kubectl describe clusterrolebinding cluster-admin
+kubectl describe pvc myclaim # inspecting persisten volume claim
+
+--------
+kubectl exec ubuntu-sleeper -- whoami # that command shows that pod user ex=root
+kubectl exec it <pod name> -- bin/sh #you can get in the container while it works
+kubectl exec kube-apiserver-controlplane -n kube-system -- kube-apiserver -h | grep enable-admission-plugins
+#if you're runnig this in a kubeadm based setup, the you must run this command within the kube-apiserver-controlplane 
+#pod/ 
+--------
+kubectl expose pod redis —name redis-service —port=6379
+kubectl expose deployment simple-webapp-deployment --name=webapp-service
+--target-port=8080 --type-NodePort=30080 --port=8080 --dry-run=client -o yaml > svc.pod
+--------
+kubectl -n kube-system get pods | grep proxy
+kubectl -n ingress-space expose deployment ingress-controller --name=ingress --port=80
+--target-port=80 --type=NodePort --dry-run=client -o yaml > ingress-svc.yaml
+--------
+kubectl explain pods --recursive | less then you search in the documant with / what you need
+kube-controller-manager --pod-eviction-timeout=5m0s
+--------
+kubectl edit deployment <deployment name> # that helps to edit your deploment
+kubectl edit role developer -n blue
+--------
+kubectl get deployment --namespace app-space
+kubectl get pod <pod-name> -o yaml > pod-definition.yaml == this command is creating YAML file include what you need
+kubectl get pods -n kube-etcd #calls pod with namespaces
+kubectl get pods --as dev-user
+kubectl get pods --namespace=<pods name>
+kubectl get replicaset
+kubectl get services
+kubectl get jobs
+kubectl get cronjobs
+
+kubectl get nodes node01 --show-labels
+kubectl get nodes/pods | grep -i
+kubectl get pods --selector app=App1 #that is called pods with labels
+kubectl get all --selector env=prod #this is called labels all resources
+kubectl get pods --all-namespaces
+kubectl get all #shows deployment replicaset and pods ones a time
+kubectl get all --all-namespaces -o yaml > all-deploy-services.yaml
+kubectl get label env=dev --no-headers | wc -l #thats show your labels of numbers
+
+---RBAC----
+kubectl create role developer --namespace=default --verb=list,create,delete --resource=pods
+kubectl create rolebinding dev-user-binding --namespace=default --role=developer --user=dev-user
+kubectl get clusterroles --no-headers | wc -l
+kubectl get clusterrolebindings --no-headers | wc -l
+kubectl get roles --all-namespaces --no-headers | wc -l #calls all roles with namespaces of numbers
+kubectl get roles -A #calls all roles
+kubectl describe role <roleName>
+kubectl describe role <name of role>
+kubectl describe rolebinding <name of rolebinding>
+------
+kubectl get pods -l env=prod,bu=finance,tier,frontend # brings pods with all labels
+kubectl get networkpolicy
+kubectl get persistentvolumeclaim/pvc
+kubectl get storageclasses/sc
+kubectl get roles
+kubectl get rolebindings
+kubectl get deamonsets
+kubectl describe
+kubectl get daemonset --all-namespaces
+kubectl get csr #check all certificate signing request
+kubectl certificate approve <username> #approve user certificate 
+kubectl get csr <username> -o yaml #view the certificate
+-------
+kubectl logs -f event-simulator-pod     #you can view logs using that to control logs command with pod name
+kubectl logs -f event-simulator-pod event-simulator     #that command you specified the container logs
+kubectl logs math-add-job-1d87pn #shows result of batch pod
+kubectl logs etcd-master 
+-------
+kubectl proxy # get in the cluster 
+-------
+watch "kubectl get pods" #shows live time for creation of pod
+kubectl -n kube-system get pods # checks system that created wit that pod
+kubectl run httpd —-image=httpd:alpine —-port=80 —-expose #creates a pod and service then expose port 80
+kubectl run redis —-image=redis:alpine —-labels=tier=db
+kubectl run nginx --image=nginx --restart=Never --dry-run=client -replicas=3 -o yaml > definition.yaml
+kubectl run firstpod --image=nginx --port=80 --labels="app=frontend,team=developer" --restart=Never
+kubectl replace -f replicaset-definition.yaml
+kubectl replace -f simple-webapp-2.yaml --force #delete pod and replace another one whic is same name pod
+kubectl rollout status deployment/myapp-deployment
+kubectl rollout history deployment/myapp-deployment
+kubectl rollout history deployment nginx --revision=1
+kubectl rollout undo deployment/myapp-deployment #that brings your previous version of containers
+---backup ETCD--
+ETCD_API=3 etcdtl \
+      snapshot save snapshot.db
+service kube-apiserver stop
+"service kube-apiserver stopped"
+ETCD_API=3 etcdtl \
+    snapshot restore snapshot.db \
+    --data-dir /var/lib/etcd-from-backup
+systemctl daemon-reload
+service etcd restart
+service kube-apiserver start
+      ---------
+kubectl set image deployment/myapp-deployment \ nginx=nginx:1.9.1 #updating your image with Imperative mode
+kubectl scale -replicas=6 -f replicaset-def.yaml
+kubectl scale statefulset mysql --replicas=5
+kubectl taint nodes node-name key=value:taint-effect
+kubectl taint nodes node1 app=blue:NoSchedule
+kubectl taint node controlplane node-role.kubernetes.io/master:NoSchedule-#untaint your node with "-" end of the command
+kubectl top node/pod  #shows your nodes or pods CPU and MEM
+kubectl version --short
+docker build -t webapp-color:lite . #creates image less size.
+docker images #shows your images what you have
+docker ps #checks your containers
+docker ps -o wide #checks your containers with more info
+docker run ubuntu #up and runnig your container with ubuntu image
+docker run python:3.6 cat /etc/*release* #inspect your image
+docker run -p 8383:8080 webapp-color:lite #run your container that gives specific ports
+docker run -e APP_COLOR=pink simple-webapp-color #create container with environment
+docker logs -f ecf
+echo -n 'bx1zcWw=' | base64 # that is making encryipted your DB-name-user-password
+echo -n 'bx1zcWw=' | base64 --decode # that is making decryipted your DB-name-user-pass
+curl https://kube-master:6443/version #checks master node version
+curl https://kube-master:6443/api/v1/pods #checks pods 
+curl https://my-kube-playgroud:6443/api/v1/pods #to connect and validate yourself by API server
+curl http://localhost:6443 -k # checks api groups
+curl http://localhost:6443/apis -k | grep "name" # checks names of the apis 
+cat /etc/*release* #chekcs your software
+
+"in the vi editor you can delete multiple line ones a time with this command
+d<number>d = you add number of the delete of lines"
