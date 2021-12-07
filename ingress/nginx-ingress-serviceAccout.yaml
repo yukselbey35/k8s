@@ -1,0 +1,7 @@
+# '''we create a sevice account with the correct roles
+#    and role bindings'''
+
+apiversion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress-serviceaccount

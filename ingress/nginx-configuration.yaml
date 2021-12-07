@@ -1,0 +1,9 @@
+# '''creating configmap makes it easy for you to
+#    modify a configuration setting in the future. you will just
+#    have to add it into this configmap and not have to worry about
+#    modifying thenginx configuration files'''
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configuration
