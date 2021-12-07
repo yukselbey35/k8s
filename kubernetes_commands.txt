@@ -184,6 +184,8 @@ docker run python:3.6 cat /etc/*release* #inspect your image
 docker run -p 8383:8080 webapp-color:lite #run your container that gives specific ports
 docker run -e APP_COLOR=pink simple-webapp-color #create container with environment
 docker logs -f ecf
+
+
 echo -n 'bx1zcWw=' | base64 # that is making encryipted your DB-name-user-password
 echo -n 'bx1zcWw=' | base64 --decode # that is making decryipted your DB-name-user-pass
 curl https://kube-master:6443/version #checks master node version
@@ -195,3 +197,37 @@ cat /etc/*release* #chekcs your software
 
 "in the vi editor you can delete multiple line ones a time with this command
 d<number>d = you add number of the delete of lines"
+
+NETWORKING
+ip link #IP link is to list and modify interfaces on the host
+ip a | grep -B2 10.47.66.3
+ssh node01 ifconfig eth0
+ip addr add 192.168.1.10/24 dev eth0
+ping 192.168.1.11
+route #It displays the kernels routing table
+ip route add 192.168.2.0/24 via 192.168.1.1 #specify that you can reach the ip address
+ip route add default via 192.168.1.1#connting swich to  internet
+on the command if yu add internet ip that means you can access only that ip range 
+that is why best practise to add default.
+cat /proc/sys/net/ipv4/ip_forward
+echo 1 /proc/sys/net/ipv4/ip_forward
+If you want to persist these changes you must set them in the /etc/network/interfaces file.
+ip -n red addr add 192.168.1.10/24 dev veth-red # While testing the Network Namespaces
+arp #ARP Command is a TCP/IP utility used for viewing and modifying the local Address Resolution Protocol (ARP) cache.
+netstat -plnt #Netstat prints information about the Linux networking subsystem
+DNS
+cat >> /etc/host#gives name of the ip address
+nslookup www.google.com 
+dig www.google.com
+
+---
+ip link add v-net-0 type bridge
+ip link set dev v-ne-0 up
+ip addr add 192.168.15.5/24 dev v-net-0
+ip link add veth-red type veth peer name eth-red-bridge
+ip link set veth-red netns red
+ip -n red addr add 192.168.15.1 dev veth-red
+ip -n red link set veth-red up
+ip link set veth-red-br master v-net-0
+ip netns exec blue ip route add 192.168.1.0/24 via 192.168.15.5
+iptables -t nat -A POSTROUTIN -s 192.168.15.0/24 -j MASQUERADE
