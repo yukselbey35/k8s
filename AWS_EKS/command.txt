@@ -24,3 +24,9 @@
 
 #confirm to delete
 #eksctl get cluster
+
+#When we schedule pods we need to check node and max pods number
+#https://github.com/yukselbey35/amazon-eks-ami/blob/master/files/eni-max-pods.txt
+Bigger the instance type, more pods
+#max number of allowed pods depends on EC2 Instance type
+#For demos use m5.large =~ 29 pods
