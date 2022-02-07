@@ -1,0 +1,21 @@
+#This yaml file create a node group in the cluster test-eksctl
+# 2 node groups with name ng2-managed & name ng1-public
+--- 
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: test-eksctl
+  region: us-east-1
+
+nodeGroups:
+  - name: ng1-public
+    instanceType: t3.micro
+    desiredCapacity: 2
+  
+managedNodeGroups:
+  - name: ng2-managed
+    instanceType: t3.micro
+    minSize: 1
+    maxSize: 3
+    desiredCapacity: 2  
