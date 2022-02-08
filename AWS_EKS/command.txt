@@ -30,3 +30,13 @@
 Bigger the instance type, more pods
 #max number of allowed pods depends on EC2 Instance type
 #For demos use m5.large =~ 29 pods
+
+#Create EKS cluster with EKS Managed Node group
+#eksctl create cluster --name <name> --version 1.18 --nodegroup-name <name> --node-type t3.micro --node <how many nodes will use number> --managed
+#eksctl create cluster --name demo-cluster --version 1.18 --nodegroup-name demo-managed-node-group --node-type t3.micro --nodes 4 --managed
+
+Kubernetes worker nodes can run 2 version behind the master node
+
+#upgrading nodes
+#eksctl upgrade nodegroup --name demo-managed-node-group --cluster demo-cluster
+#We can also upgrade the cluster on the AWS Console just search EKS and select the cluster

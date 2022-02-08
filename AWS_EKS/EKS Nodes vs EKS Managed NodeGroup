@@ -1,0 +1,21 @@
+EKS Nodes vs EKS Managed NodeGroup
+K8 version needs to be updated
+Deploy security patches
+EC2 AMIs need to be updated
+Create AMIs
+During the update Application will be DOWN 
+and we need to orchestrate HA 
+
+
+AWS EKS Managed NodeGroup Automate to provisoning
+and lifecyle managment
+
+Create and Manage EC2 Workers for you
+● Amazon releases AMIs with bug fix, security patches for 
+EKS Worker Nodes
+○ Custom AMIs not supported (As of April, 2020)
+● Automated deployment of updated AMIs with security 
+patches, CVEs
+○ No app downtime
+○ No overhead of user managed orchestration
+○ Auto scaling group is used behind the scene

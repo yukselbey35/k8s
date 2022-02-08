@@ -1,0 +1,6 @@
+#Install helm to windows
+choco install kubernetes-helm
+
+#You can find publicly available charts by running helm search hub
+# helm search hub wordpress
+# helm search hub deployment
