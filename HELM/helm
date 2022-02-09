@@ -9,19 +9,34 @@ published
 (Kustomize, jinja etc.)
 ● Popular packages already available
 
+#Using ArtifactHub just like DockerHub 
+#When we need to use wordpress helmchart
+#We can search and install  wordpress helmchart from Bitnami
 
 #Install helm to windows
 choco install kubernetes-helm
 
-#You can find publicly available charts by running helm search hub
-# helm search hub wordpress
-# helm search hub deployment
-# helm search repo 
-# helm search repo wordpress
-# helm search repo nginx
-
-#We can search on HUB too
+#You can find publicly available helm charts by running helm search hub
+#We can search on ArtifactHUB too
 helm search hub nginx
+helm search hub wordpress
+helm search hub deployment
+
+#We can search on repo in the our PC
+helm search repo 
+helm search repo wordpress
+helm search repo nginx
+
+
+#When we want to use a wordpress helm chart
+first add the repository
+Second install
+
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install <name> bitnami/wordpress
+#Using install with namespace
+helm install <name> bitnami/wordpress --namespace=production
+
 
 #Download one of the chart and unzip it
 # helm pull bitnami/nginx --untar=true 
