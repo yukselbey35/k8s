@@ -4,3 +4,15 @@ choco install kubernetes-helm
 #You can find publicly available charts by running helm search hub
 # helm search hub wordpress
 # helm search hub deployment
+# helm search repo 
+# helm search repo wordpress
+# helm search repo nginx
+
+#We can search on HUB too
+helm search hub nginx
+
+#Download one of the chart and unzip it
+# helm pull bitnami/nginx --untar=true 
+
+# Use helm to install helm chart
+install helm-nginx bitnami/nginx

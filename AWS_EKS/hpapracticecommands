@@ -1,0 +1,84 @@
+#HorizontalPodAutoscaler Walkthrough
+#https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/
+
+# Create the cluster
+# 1) eksctl create cluster --name hpa-test-cluster-1 --nodegroup-name hpa-managed-node-group --node-type m5.large --nodes 2 --managed
+
+# Check the metric server
+# 2) kubectl get deployment metrics-server -n kube-system
+
+#3) Install the metrics server from: https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.4.0/aio/deploy/recommended.yaml
+
+#4) Validate the metrics server
+# kubectl get deployment metrics-server -n kube-system
+
+#5) Deploy the HPA-php-apache.yaml deployment
+#kubectl apply -f HPA-php-apache.yaml
+
+#6) Validate all
+#kubectl get all
+
+#7) Increase the load 
+#https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/
+#Run the increase load
+## Run this in a separate terminal
+# so that the load generation continues and you can carry on with the rest of the steps
+# kubectl run -i --tty load-generator --rm --image=busybox --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://php-apache; done"
+
+#8) # type Ctrl+C to end the watch when you're ready
+# kubectl get hpa php-apache --watch
+
+#9) To stop the process type: Ctrl+C and exit
+
+#10) Delete the cluster
+#eksctl get cluster
+#eksctl delete cluster --name=<cluster-name>
+# eksctl delete cluster --name=hpa-test-cluster-1 
+
+#kubectl get hpa
+
+#eksctl create cluster --name eksctl-test --nodegroup-name=ng-default --node-type t3.micro --nodes 2
+#eksctl create cluster --name <name> --version 1.15 --node-type t3.micro --nodes 2 
+
+#eksctl create cluster --name test-cluster 
+#Create EKS cluster with one nodegroup containing 2 m5.large node
+
+#eksctl create cluster --name test-cluster --nodegroup-name ng-default --node-type t3.micro --nodes 2
+#Create EKS cluster with name test-cluster with node group name ng-default with 2 of t3.micro nodes 
+
+#eksctl create nodegroup --config-file=eksctl-create-ng.yaml
+#using yaml file to create a node group
+
+#eksctl get nodegroup --cluster=test-cluster
+#We can see the node groups in the test cluster
+
+#eksctl create cluster --config-file=create-test-cluster.yaml
+#This will create a cluster with node groups name ng-default with 2 t3.micro from the yaml(config or manifest) file
+
+#eksctl get cluster
+#to see the cluster
+
+#Delete the cluster : test-cluster
+#eksctl delete cluster --name=test-cluster
+
+#confirm to delete
+#eksctl get cluster
+
+#When we schedule pods we need to check node and max pods number
+#https://github.com/yukselbey35/amazon-eks-ami/blob/master/files/eni-max-pods.txt
+Bigger the instance type, more pods
+#max number of allowed pods depends on EC2 Instance type
+#For demos use m5.large =~ 29 pods
+
+#Create EKS cluster with EKS Managed Node group
+#eksctl create cluster --name <name> --version 1.18 --nodegroup-name <name> --node-type t3.micro --node <how many nodes will use number> --managed
+#eksctl create cluster --name demo-cluster --version 1.18 --nodegroup-name demo-managed-node-group --node-type t3.micro --nodes 4 --managed
+
+
+
+Kubernetes worker nodes can run 2 version behind the master node
+
+#upgrading nodes
+#eksctl upgrade nodegroup --name demo-managed-node-group --cluster demo-cluster
+#We can also upgrade the cluster on the AWS Console just search EKS and select the cluster
