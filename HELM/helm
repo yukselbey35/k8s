@@ -1,3 +1,15 @@
+Helm is package manager for Kubernetes
+● Helm packages are called Charts
+● Helm Charts help define, install, and upgrade 
+complex Kubernetes application
+● Helm Charts can be versioned, shared, and 
+published
+● Helm Charts can accept input parameter
+○ kubectl need template engine to do this 
+(Kustomize, jinja etc.)
+● Popular packages already available
+
+
 #Install helm to windows
 choco install kubernetes-helm
 
