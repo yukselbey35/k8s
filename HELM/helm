@@ -28,18 +28,43 @@ helm search repo wordpress
 helm search repo nginx
 
 
+#Download one of the chart and unzip it
+# helm pull bitnami/nginx --untar=true 
+
+# Use helm to install helm chart
+install helm-nginx bitnami/nginx
+
+
 #When we want to use a wordpress helm chart
 first add the repository
 Second install
 
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm install <name> bitnami/wordpress
+helm install  wordpress1 bitnami/wordpress
 #Using install with namespace
 helm install <name> bitnami/wordpress --namespace=production
 
+#We can see the status
+helm status <name>
+helm status wordpress1
 
-#Download one of the chart and unzip it
-# helm pull bitnami/nginx --untar=true 
+#Customizing the Chart Before Installing
+#We can see which values we can modify
+helm show values bitnami/wordpress
 
-# Use helm to install helm chart
-install helm-nginx bitnami/nginx
+#You can then override any of these settings in a YAML formatted file, and then pass that file during installation.
+
+$ echo '{mariadb.auth.database: user0db, mariadb.auth.username: user0}' > values.yaml
+$ helm install -f values.yaml bitnami/wordpress --generate-name
+
+#When it is time to uninstall a release from the cluster, use the helm uninstall command:
+$ helm uninstall <name>
+$ helm uninstall wordpress1
+
+#You can specify the '--values'/'-f' flag multiple times. The priority will be given to the last (right-most) file specified. For example, if both myvalues.yaml and override.yaml contained a key called 'Test', the value set in override.yaml would take precedence:
+$ helm upgrade -f myvalues.yaml -f override.yaml redis ./redis
+
+#This command rolls back a release to a previous revision.
+helm rollback <RELEASE> [REVISION] [flags]
+helm rollback wordpress1 

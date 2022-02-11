@@ -1,4 +1,4 @@
-#HorizontalPodAutoscaler Walkthrough
+$HorizontalPodAutoscaler Walkthrough
 #https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/
 
 # Create the cluster
@@ -67,7 +67,7 @@
 
 #When we schedule pods we need to check node and max pods number
 #https://github.com/yukselbey35/amazon-eks-ami/blob/master/files/eni-max-pods.txt
-Bigger the instance type, more pods
+$Bigger the instance type, more pods
 #max number of allowed pods depends on EC2 Instance type
 #For demos use m5.large =~ 29 pods
 
@@ -77,8 +77,12 @@ Bigger the instance type, more pods
 
 
 
-Kubernetes worker nodes can run 2 version behind the master node
+$Kubernetes worker nodes can run 2 version behind the master node
 
 #upgrading nodes
 #eksctl upgrade nodegroup --name demo-managed-node-group --cluster demo-cluster
 #We can also upgrade the cluster on the AWS Console just search EKS and select the cluster
+
+$ Horizontal Pod Autoscaler (HPA)
+# We use Horizontal Pod Autoscaler (HPA) to determine CPU and memory usage 
+# to set resources request and limits 

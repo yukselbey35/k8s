@@ -1,0 +1,12 @@
+#When the traffic increase CPU utilization will increase and HPA 
+#kicks-in to increase pod number.  
+#HPA scale pods in a node
+
+#Cluster Autoscaler 
+#Cluster Autoscaler has two components
+# 1 Open Source Cluster Autoscaler
+# 2 EKS Implementation (ASG, IAM etc.)
+
+#the CPU utilization increase Cluster Autoscaler kicks in and add another node.
+#Means AutoScalingGroup.  
+Cluster Autoscaler => AutoScalingGroup. 
