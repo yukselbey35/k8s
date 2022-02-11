@@ -1,0 +1,125 @@
+#Deploy a project on Azure
+#1 First login our account on Azure
+$ az login
+
+https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-deploy-cluster?tabs=azure-cli
+#Connect to cluster using kubectl
+#Azure CLI
+#Azure PowerShell
+#To configure kubectl to connect to your Kubernetes cluster,
+#use the az aks get-credentials command. 
+#The following example gets credentials for 
+#the AKS cluster named myAKSCluster in
+#the myResourceGroup:
+
+Azure CLI
+az aks get-credentials --resource-group myResourceGroup --name myAKSCluster
+
+# Check the resource on Azure
+# Resouce just like folder
+$ az group list -o table
+
+#we are creating a resource group on Azure westus zone
+az aks create \
+    --resource-group myResourceGroup \
+    --name myAKSCluster \
+    --node-count 2 \
+    --generate-ssh-keys \
+    --attach-acr <acrName>
+
+$ az group create --name rg-k8sproje --location westus
+
+#if you get this error
+An RSA key file or key value must be supplied to SSH Key Value. You can use --generate-ssh-keys to let CLI generate one for you
+
+#then run this code
+$ az aks create --name aks-k8sproje --resource-group rg-k8sproje --node-vm-size Standard_B2ms --node-count 4 --location westus --generate-ssh-keys
+
+#Creating AKS cluster on Azure in the rg-k8sproje resource group  
+#5-6 minutes later The kubernes cluster created on Azure.
+
+#We need to check creadentials so we can use kubectl
+#Use this command to merge info to our kubeconfig 
+$ az aks get-credentials --name aks-k8sproje --resource-group rg-k8sproje 
+
+#Check nodes
+ kubectl get nodes
+NAME                                STATUS   ROLES   AGE   VERSION
+aks-nodepool1-67439351-vmss000000   Ready    agent   17m   v1.21.7
+aks-nodepool1-67439351-vmss000001   Ready    agent   17m   v1.21.7
+aks-nodepool1-67439351-vmss000002   Ready    agent   17m   v1.21.7
+aks-nodepool1-67439351-vmss000003   Ready    agent   17m   v1.21.7
+
+#Create the namespaces
+$ kubectl create namespace test
+$ kubectl create namespace production
+
+#Create a role where the group named "junior" will have all rights such as "read, list, create..." on all resources in the "test" namespace, and only "read and list" rights on all resources in the "production" namespace and group them. associate.
+$ kubectl apply -f ./yaml/jr-production-rb.yaml
+
+$ kubectl apply -f ./yaml/jr-test-rb.yaml
+
+$ kubectl apply -f ./yaml/sr-cluster-crb.yaml
+
+$ kubectl apply -f ./yaml/sr-production-rb.yaml
+
+$ kubectl apply -f ./yaml/sr-test-rb.yaml
+
+#Check them
+kubectl get rolebinding -n test
+NAME         ROLE               AGE
+sr-test-rb   ClusterRole/edit   2m45s
+kubectl get rolebinding -n production
+NAME               ROLE               AGE
+jr-production-rb   ClusterRole/view   4m21s
+sr-production-rb   ClusterRole/edit   3m2s
+
+#Install an "ingress controller" of your choice. (nginx, traefik, haproxy etc.)
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.47.0/deploy/static/provider/cloud/deploy.yaml
+#Check it
+kubectl get all -n ingress-nginx
+NAME                                            READY   STATUS      RESTARTS   AGE
+pod/ingress-nginx-admission-create-xd2xz        0/1     Completed   0          7m11s
+pod/ingress-nginx-admission-patch-m97ph         0/1     Completed   1          7m11s
+pod/ingress-nginx-controller-5b74bc9868-qc966   1/1     Running     0          7m12s
+
+NAME                                         TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE
+service/ingress-nginx-controller             LoadBalancer   10.0.210.128   13.73.48.96   80:32536/TCP,443:31605/TCP   7m12s
+service/ingress-nginx-controller-admission   ClusterIP      10.0.89.113    <none>        443/TCP                      7m12s
+
+NAME                                       READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/ingress-nginx-controller   1/1     1            1           7m12s
+
+NAME                                                  DESIRED   CURRENT   READY   AGE
+replicaset.apps/ingress-nginx-controller-5b74bc9868   1         1         1       7m12s
+
+NAME                                       COMPLETIONS   DURATION   AGE
+job.batch/ingress-nginx-admission-create   1/1           5s         7m11s
+job.batch/ingress-nginx-admission-patch    1/1           6s         7m11s                   ClusterIP      10.0.239.101   <none>        443/TCP                      37m
+
+#The 3 worker nodes you will choose in the cluster can be scheduled so that only the pods created by the cluster that you will deploy in the "production" environment can be scheduled. Make sure no other pods are created on this worker node.
+$ node1=$(kubectl get no -o jsonpath="{.items[1].metadata.name}")
+
+$ node2=$(kubectl get no -o jsonpath="{.items[2].metadata.name}")
+
+$ node3=$(kubectl get no -o jsonpath="{.items[3].metadata.name}")
+
+$ kubectl taint node $node1 tier=production:NoSchedule
+
+$ kubectl taint node $node2 tier=production:NoSchedule
+
+$ kubectl taint node $node3 tier=production:NoSchedule
+
+$ kubectl label node $node1 tier=production
+
+$ kubectl label node $node2 tier=production
+
+$ kubectl label node $node3 tier=production
+
+#Deploy the Wordpress application in both the "test" and "production" namespaces. (will be created from wordpress:latest and mysql:5.6 images)
+#Mysql will be accessible from within the cluster with a "ClusterIp" type service.
+#Long-term data of both applications will be stored on "persistent volumes".
+#No sensitive information of either application "ex: password" will be kept in application or yaml files.
+#Both applications will be scheduled on the same worker node.
+#CPU and memory resource constraints will be defined for both applications.
+
