@@ -123,3 +123,147 @@ $ kubectl label node $node3 tier=production
 #Both applications will be scheduled on the same worker node.
 #CPU and memory resource constraints will be defined for both applications.
 
+$ kubectl create secret generic mysql-test-secret -n test --from-file=MYSQL_ROOT_PASSWORD=./yaml/mysql_root_password.txt --from-file=MYSQL_USER=./yaml/mysql_user.txt --from-file=MYSQL_PASSWORD=./yaml/mysql_password.txt --from-file=MYSQL_DATABASE=./yaml/mysql_database.txt
+
+$ kubectl create secret generic mysql-prod-secret -n production --from-file=MYSQL_ROOT_PASSWORD=./yaml/mysql_root_password.txt --from-file=MYSQL_USER=./yaml/mysql_user.txt --from-file=MYSQL_PASSWORD=./yaml/mysql_password.txt --from-file=MYSQL_DATABASE=./yaml/mysql_database.txt
+
+$ kubectl apply -f ./yaml/wptest.yaml
+
+$ kubectl apply -f ./yaml/wpprod.yaml
+
+#The wordpress application deployed in the "test" namespace will be exposed to the outside world via ingress as "testblog.example.com", and the wordpress application deployed in the "production" namespace as "companyblog.example.com".
+$ kubectl apply -f ./yaml/wpingress.yaml
+
+#Create a deployment with 5 replicas from the "ozgurozturknet/k8s:v1" image in the "production" namespace, where 2 pods can be updated simultaneously as an update strategy. Have the definitions of a "liveness probe" querying the "/healthcheck" endpoint and a "readiness probe" querying the "/ready" endpoint.
+$ kubectl apply -f ./yaml/deployment.yaml
+
+#Make the deployment you created in the previous task accessible from the outside world with a "loadbalancer" type service.
+$ kubectl expose deployment k8s-deployment --type=LoadBalancer -n production
+
+#First download this deployment to 3 replicas. Then increase it to 10 replicates. Then update this deployment with the image "ozgurozturknet/k8s:v2".
+$ kubectl scale deployment k8s-deployment --replicas=3 -n production
+
+$ kubectl scale deployment k8s-deployment --replicas=10 -n production
+
+$ kubectl set image deployment/k8s-deployment k8s=ozgurozturknet/k8s:v2 -n production
+
+#Deploy fluentd" as a "daemonset" in the cluster.
+$ kubectl apply -f ./yaml/daemonset.yaml
+
+#Deploy a 2-node "mongodb" cluster as a "statefulset" in the cluster. Make sure the "mongodb" cluster is running.
+$ kubectl apply -f ./yaml/statefulset.yaml
+
+$ kubectl exec -it mongostatefulset-0 -- bash
+
+root@mongostatefulset-0:/# mongo
+
+> rs.initiate({ _id: "MainRepSet", version: 1, 
+members: [ 
+ { _id: 0, host: "mongostatefulset-0.mongo-svc.default.svc.cluster.local:27017" }, 
+ { _id: 1, host: "mongostatefulset-1.mongo-svc.default.svc.cluster.local:27017" } ]});
+
+MainRepSet:PRIMARY> db.getSiblingDB("admin").createUser({
+...       user : "mongoadmin",
+...       pwd  : "P@ssw0rd!1",
+...       roles: [ { role: "root", db: "admin" } ]
+...  });
+
+MainRepSet:PRIMARY> rs.status();
+
+
+#Create a "service account" with "read and list" rights on all objects in the cluster. Create a pod to which you connect this service account and list all pods in the cluster with "curl" by connecting.
+$ kubectl apply -f ./yaml/serviceaccount.yaml
+
+$ kubectl exec -it pod-proje -- bash
+
+bash-5.0# CERT=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+
+bash-5.0# TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+
+bash-5.0# curl --cacert $CERT https://kubernetes/api/v1/pods --header "Authorization:Bearer $TOKEN" | jq '.items[].metadata.name'
+
+#result from the screen
+kubectl apply -f ./yaml/serviceaccount.yaml                                                                                                serviceaccount/sa-project created
+clusterrolebinding.rbac.authorization.k8s.io/rb-project created
+pod/pod-proje created
+
+
+
+bash-5.0# curl --cacert $CERT https://kubernetes/api/v1/pods --header "Authorization:Bearer $TOKEN" | jq '.items[].metadata.name'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  514k    0  514k    0     0  6767k      0 --:--:-- --:--:-- --:--:-- 6767k
+"logdaemonset-7lhgc"
+"logdaemonset-8cdtj"
+"logdaemonset-f8lnw"
+"logdaemonset-mf2bm"
+"mongostatefulset-0"
+"mongostatefulset-1"
+"pod-proje"
+"ingress-nginx-admission-create-xd2xz"
+"ingress-nginx-admission-patch-m97ph"
+"ingress-nginx-controller-5b74bc9868-qc966"
+"azure-ip-masq-agent-9h566"
+"azure-ip-masq-agent-sch64"
+"azure-ip-masq-agent-slst8"
+"azure-ip-masq-agent-v49kc"
+"coredns-845757d86-h4kzd"
+"coredns-845757d86-ksfs8"
+"coredns-autoscaler-5f85dc856b-pwv7z"
+"csi-azuredisk-node-24cwg"
+"csi-azuredisk-node-2584q"
+"csi-azuredisk-node-7v6q9"
+"csi-azuredisk-node-8wv7c"
+"csi-azurefile-node-cssbc"
+"csi-azurefile-node-kdnpr"
+"csi-azurefile-node-ndfdv"
+"csi-azurefile-node-tfspw"
+"kube-proxy-4rltn"
+"kube-proxy-cv7vh"
+"kube-proxy-gcg5r"
+"kube-proxy-vrpsn"
+"metrics-server-6bc97b47f7-9fjjq"
+"tunnelfront-686bcff9c-xfmk9"
+"k8s-deployment-7c59fdccf-5vsgs"
+"k8s-deployment-7c59fdccf-9jxm5"
+"k8s-deployment-7c59fdccf-9vsn9"
+"k8s-deployment-7c59fdccf-ddfcm"
+"k8s-deployment-7c59fdccf-g2sp7"
+"k8s-deployment-7c59fdccf-rn26g"
+"k8s-deployment-7c59fdccf-skbnn"
+"k8s-deployment-7c59fdccf-thwqj"
+"k8s-deployment-7c59fdccf-wmj5k"
+"k8s-deployment-7c59fdccf-zsczq"
+"mysql-deployment-67c654678-fnsw2"
+"wp-deployment-668cd4bc4-4gjlw"
+"mysql-deployment-79bd7c765b-qw8w9"
+"wp-deployment-65c74d97c8-jfh67"
+
+#Evacuate all pods on one of the worker nodes and then ensure that no new pods can be scheduled.
+$ nodedrain=$(kubectl get no -o jsonpath="{.items[3].metadata.name}")
+
+$ kubectl drain $nodedrain --ignore-daemonsets --delete-local-data
+
+$ kubectl cordon $nodedrain
+
+kubectl get no -o jsonpath="{.items[3].metadata.name}"
+aks-nodepool1-67439351-vmss000003
+
+kubectl drain aks-nodepool1-67439351-vmss000003 --ignore-daemonsets --delete-local-data
+Flag --delete-local-data has been deprecated, This option is deprecated and will be deleted. Use --delete-emptydir-data.
+node/aks-nodepool1-67439351-vmss000003 cordoned
+WARNING: ignoring DaemonSet-managed Pods: default/logdaemonset-f8lnw, kube-system/azure-ip-masq-agent-v49kc, kube-system/csi-azuredisk-node-2584q, kube-system/csi-azurefile-node-cssbc, kube-system/kube-proxy-vrpsn
+evicting pod production/wp-deployment-668cd4bc4-4gjlw
+evicting pod production/k8s-deployment-7c59fdccf-ddfcm
+evicting pod production/mysql-deployment-67c654678-fnsw2
+evicting pod production/k8s-deployment-7c59fdccf-rn26g
+evicting pod ingress-nginx/ingress-nginx-controller-5b74bc9868-qc966
+pod/wp-deployment-668cd4bc4-4gjlw evicted
+pod/mysql-deployment-67c654678-fnsw2 evicted
+pod/k8s-deployment-7c59fdccf-ddfcm evicted
+pod/k8s-deployment-7c59fdccf-rn26g evicted
+pod/ingress-nginx-controller-5b74bc9868-qc966 evicted
+node/aks-nodepool1-67439351-vmss000003 evicted
+
+kubectl cordon aks-nodepool1-67439351-vmss000003
+node/aks-nodepool1-67439351-vmss000003 already cordoned
