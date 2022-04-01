@@ -34,6 +34,9 @@ Bigger the instance type, more pods
 #Create EKS cluster with EKS Managed Node group
 #eksctl create cluster --name <name> --version 1.18 --nodegroup-name <name> --node-type t3.micro --node <how many nodes will use number> --managed
 #eksctl create cluster --name demo-cluster --version 1.18 --nodegroup-name demo-managed-node-group --node-type t3.micro --nodes 4 --managed
+
+#eksctl create cluster --name demo-cluster --nodegroup-name demo-managed-node-group --node-type t3.micro --nodes 4 --managed
+
 # eksctl create cluster --name hpa-test-cluster-1 --nodegroup-name hpa-managed-node-group --node-type m5.large --nodes 2 --managed
 
 Kubernetes worker nodes can run 2 version behind the master node

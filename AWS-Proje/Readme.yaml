@@ -76,7 +76,10 @@ jr-production-rb   ClusterRole/view   4m21s
 sr-production-rb   ClusterRole/edit   3m2s
 
 #Install an "ingress controller" of your choice. (nginx, traefik, haproxy etc.)
-$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.47.0/deploy/static/provider/cloud/deploy.yaml
+# Ingress FOR Azure
+# Ingress FOR AWS 
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.2/deploy/static/provider/cloud/deploy.yaml
+
 #Check it
 kubectl get all -n ingress-nginx
 NAME                                            READY   STATUS      RESTARTS   AGE
@@ -132,7 +135,12 @@ $ kubectl apply -f ./yaml/wptest.yaml
 
 $ kubectl apply -f ./yaml/wpprod.yaml
 
-#The wordpress application deployed in the "test" namespace will be exposed to the outside world via ingress as "testblog.example.com", and the wordpress application deployed in the "production" namespace as "companyblog.example.com".
+#TO CHECK the deployment we can use this command
+$kubectl port-forward deployment/wp-deployment -n test 8080:80
+
+#The wordpress application deployed in the "test" namespace will be exposed to the outside 
+# world via ingress as "testblog.example.com", and the wordpress application deployed in 
+#the "production" namespace as "companyblog.example.com".
 $ kubectl apply -f ./yaml/wpingress.yaml
 
 #Create a deployment with 5 replicas from the "ozgurozturknet/k8s:v1" image in the "production" namespace, where 2 pods can be updated simultaneously as an update strategy. Have the definitions of a "liveness probe" querying the "/healthcheck" endpoint and a "readiness probe" querying the "/ready" endpoint.
