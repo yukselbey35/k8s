@@ -21,3 +21,20 @@
   
    18  eksctl get cluster
    19  aws eks update-kubeconfig --name dev --region us-east-1
+
+   sudo yum install -y git
+
+   After install an application with service yaml to check it
+   #Access the application using the load balancer, replacing <LOAD_BALANCER_DNS_HOSTNAME> with
+   # the IP you copied earlier (it might take a couple of minutes to update):
+  $ kubectl get svc 
+  
+  curl "<LOAD_BALANCER_DNS_HOSTNAME>"
+  curl "a053a7d010338461c937dca588284691-1844653777.us-east-1.elb.amazonaws.com"
+ The output should be the HTML for a default Nginx web page.
+
+In a new browser tab, navigate to the same IP, where we should then see the same Nginx web page.
+
+In the CLI, delete everything:
+
+eksctl delete cluster dev
