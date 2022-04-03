@@ -17,7 +17,7 @@
    16  eksctl version
    
    # BUNU DENE  
-   17  eksctl create cluster --name dev --version 1.21 --region us-east-1 --nodegroup-name standard-workers --node-type m5.large --nodes 4 --nodes-min 1 --nodes-max 4 --managed
+   17  eksctl create cluster --name dev --version 1.21 --region us-east-1 --nodegroup-name standard-workers --node-type t2.large --nodes 4 --nodes-min 1 --nodes-max 4 --managed
   
    18  eksctl get cluster
    19  aws eks update-kubeconfig --name dev --region us-east-1
