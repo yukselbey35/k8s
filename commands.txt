@@ -167,6 +167,8 @@ kubectl logs etcd-master
 kubectl logs web -f --previous
 kubectl logs weave-net-5gcmd weave -n kube-system
 -------
+ --grace-period=0 --force
+ 
 kubectl proxy # get in the cluster 
 
 ---RBAC----
@@ -681,6 +683,8 @@ helm install release-4 ./wordpress
    2- openssl req -new -key ca.key -subj "/CN=KUBERNETES-CA" -out ca.csr #certificate signing request
    3- openssl x509 -req -in ca.csr -signkey ca.key -out ca.crt # sing certificate
 
+VI editor
+Note: To paste YAML directly into the Vi/Vim editor, first enter the command :set paste.
 
 ****Linux Commands******
 uname -a #Check linux kernel
@@ -708,7 +712,7 @@ sudo chown -R jenkins /var/lib/jenkins/jenkins_backup
 
 top #see cpu and memory
 htop
-
+cp -a /source/. /dest/   #copy all files in the directory
 nslookup google.com #Nslookup (stands for “Name Server Lookup”) is a useful command for getting information from the DNS server
 
 systemctl restart kubelet #restart kubelet

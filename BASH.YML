@@ -1,0 +1,33 @@
+#!/bin/bash
+#get admin privileges
+sudo su  
+yum update -y
+yum install -y httpd
+yum install -y wget
+cd /var/www/html
+wget https://raw.githubusercontent.com/ACloudGuru-Resources/Course-Certified-Solutions-Architect-Associate/master/labs/creating-an-auto-scaling-group-and-app-load-balancer-aws/index.html
+wget https://raw.githubusercontent.com/ACloudGuru-Resources/Course-Certified-Solutions-Architect-Associate/master/labs/creating-an-auto-scaling-group-and-app-load-balancer-aws/acg.jpg
+service httpd start
+
+sudo amazon-linux-extras install ansible2
+
+ 1  cd /var/www/html
+    2  yum install git -y
+    3  rm index.html
+    4  rm acg.jpg
+    5  git clone https://github.com/yukselbey35/ArizonaWebDesignBootstrap.git
+    6  cp -a /var/www/html/ArizonaWebDesignBootstrap/. /var/www/html
+    7  ls
+    8  service httpd restart
+    9  history
+
+
+1  cd /var/www/html
+    2  yum install git -y
+    3  rm index.html
+    4  rm acg.jpg
+    5  git clone https://github.com/yukselbey35/ArizonaWebDesignBootstrap.git
+    6  cp -a 
+
+
+    Note: To paste YAML directly into the Vi/Vim editor, first enter the command :set paste.

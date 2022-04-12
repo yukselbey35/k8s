@@ -12,15 +12,20 @@
    11  mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
    12  echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
    13  kubectl version --short --client
+ #installing eksctl
+   #Intalling weave 
    14  curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
    15  sudo mv /tmp/eksctl /usr/local/bin
    16  eksctl version
    
-   # BUNU DENE  
+   # CREATING CLUSTER
    17  eksctl create cluster --name dev --version 1.21 --region us-east-1 --nodegroup-name standard-workers --node-type t2.large --nodes 4 --nodes-min 1 --nodes-max 4 --managed
   
+  #Cloud guru
+  17  eksctl create cluster --name dev --version 1.21 --region us-east-1 --nodegroup-name standard-workers --node-type t3.medium --nodes 4 --nodes-min 1 --nodes-max 4 --managed
+
    18  eksctl get cluster
-   19  aws eks update-kubeconfig --name dev --region us-east-1
+   19  aws eks update-kubeconfig --name dev --region us-east-2
 
    sudo yum install -y git
 
@@ -35,6 +40,10 @@
 
 In a new browser tab, navigate to the same IP, where we should then see the same Nginx web page.
 
+eksctl get cluster --region us-east-2
+
 In the CLI, delete everything:
 
 eksctl delete cluster dev
+
+eksctl delete cluster dev --region us-east-2

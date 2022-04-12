@@ -1,0 +1,14 @@
+---
+- hosts: kubernetes
+# become: true
+  user: root
+
+  tasks:
+  - name: deploy regapp on kubernetes
+    command: kubectl apply -f regapp-deployment.yml    
+
+  - name: deploy regapp service on kubernetes
+    command: kubectl apply -f /root/regapp-service.yml
+
+  - name: update deployment with new pods if image updated in docker hub  
+    command: kubectl rollout restart deployment.apps/yuksel-regapp
