@@ -1,0 +1,20 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: dev-cluster
+  region: us-east-1
+  version: "1.21"
+availabilityZones:
+- us-east-1a
+- us-east-1b
+- us-east-1c
+managedNodeGroups:
+- name: general
+  labels:
+    role: general
+  instanceType: t3.medium
+  minSize: 2
+  maxSize: 10
+  desiredCapacity: 2
+  volumeSize: 20
