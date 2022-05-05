@@ -19,7 +19,10 @@ minikube ip
 export INGRESS_HOST=$(minikube ip)
 ```
 
-
+# Istio provides a basic sample installation to quickly get Kiali up and running:
+```
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.13/samples/addons/kiali.yaml
+```
 
 
 

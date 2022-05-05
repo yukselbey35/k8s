@@ -1,6 +1,7 @@
 # What is kiali
 - Kiali is an observability console for Istio with service mesh configuration and validation capabilities
-
+- Kiali is a management console for Istio service mesh. Which provides robust observability for our running mesh and number of more features.
+- Kiali can automatically generate istio configuration
 - Install Kiali
 - Istio provides a basic sample installation to quickly get Kiali up and running
 ```
