@@ -75,6 +75,7 @@ kubectl create deploment fluentd-elasticsearch --image quay.io/fluentd_elasticse
 kubectl config view #checks in the config file
 kubectl config view --kubeconfig=my-custom-config
 kubectl config use-context prod-user@production#update current context 
+kubectl config use-context  eks-cluster-test # to set the cluster 
 kubectl config --kubeconfig=my-kube-config use-context research
 --------
 kubectl cluster set-context --context --namespace<insert namespace name>
@@ -704,7 +705,7 @@ ps aux | grep nginx #Check CPU usage for process
 useradd yak #add user
 passwd yak #change password
 cat /etc/group
-usermod -aG docker dockeradmin #add user as a dockeradmin to admin group 'docker'
+usermod -aG docker dockeradmin # add user as a dockeradmin to admin group 'docker'
 chmod 777 jenkinsbackup/ #change the directory permission
 
 sudo mkdir /var/lib/jenkins/jenkins_backup

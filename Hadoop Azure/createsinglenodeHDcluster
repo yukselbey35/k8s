@@ -1,0 +1,220 @@
+1. install java:
+http://download.oracle.com/otn-pub/java/jdk/8u151-b12/e758a0de34e24606bca991d704f6dcbf/jdk-8u151-linux-i586.tar.gz
+Create a jvm folder in /usr/lib/ which is the default location for Java.
+# sudo mkdir /usr/lib/jvm
+Go to the created /usr/lib/jvm folder.
+# cd /usr/lib/jvm
+Extract the downloaded JDK.
+#sudo tar -xvzf /home/rafikm/jdk-8u251-linux-x64.tar.gz
+Edit the environment file.
+#sudo vi /etc/environment
+Update the existing PATH variable by adding the below bin folders, separated with a colon :.
+
+/usr/lib/jvm/jdk1.8.0_251/bin:/usr/lib/jvm/jdk1.8.0_251/db/bin:/usr/lib/jvm/jdk1.8.0_251/jre/bin
+
+Add the below variables at the end of environment file, making changes for your specific version and update.
+J2SDKDIR="/usr/lib/jvm/jdk1.8.0_251"
+J2REDIR="/usr/lib/jvm/jdk1.8.0_251/jre"
+JAVA_HOME="/usr/lib/jvm/jdk1.8.0_251"
+DERBY_HOME="/usr/lib/jvm/jdk1.8.0_251/db"
+
+Inform Ubuntu about the installed location
+# sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk1.8.0_251/bin/java" 0
+# sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk1.8.0_251/bin/javac" 0
+# sudo update-alternatives --set java /usr/lib/jvm/jdk1.8.0_251/bin/java
+# sudo update-alternatives --set javac /usr/lib/jvm/jdk1.8.0_251/bin/javac
+
+Setup verification
+# update-alternatives --list java
+# update-alternatives --list javac
+#Restart the computer or open a new terminal.
+
+
+# java -version
+
+sudo apt-get update
+
+1.Add User:::
+
+First Add one group::
+sudo addgroup hadoop
+
+sudo adduser --ingroup hadoop hadoop
+
+it will ask for password: ******
+
+add this user to sudo group::
+sudo adduser hadoop sudo
+
+2. download hadoop from::
+$wget https://downloads.apache.org/hadoop/common/hadoop-2.7.7/hadoop-2.7.7.tar.gz
+   
+
+Untar the archive and move it to /opt/hadoop
+$tar -xzvf hadoop-2.7.7.tar.gz
+$sudo mv hadoop-2.7.7 /opt/hadoop
+
+3. Open /etc/environment and update the PATH line to include the Hadoop binary directories.
+
+$sudo nano /etc/environment
+/opt/hadoop/bin
+
+4. Create A folder
+sudo  mkdir /opt/hadoopdata
+
+
+
+5. Give them the correct permissions
+sudo chown hadoop:root -R /opt/hadoop
+sudo chmod g+rwx -R /opt/hadoop
+
+sudo chown hadoop:root /opt/hadoopdata
+sudo chmod g+rwx -R /opt/hadoopdata
+
+
+6. Now check for openssh-server
+sudo systemctl status ssh -> Ubuntu
+sudo service sshd status -> CentOS
+
+if not installed then install openssh-server::
+sudo apt-get update
+sudo apt-get install openssh-server
+
+
+7. Login as the hadoop user and generate an SSH Key. You only need to complete this step on the Hadoop Master.
+
+su - hadoop
+generate ssh key::
+
+ssh-keygen -t rsa -P ""
+
+key will be stored:: /home/hadoop/.ssh
+named: id_rsa
+named: id_rsa.pub
+
+now need to add the key to your autherized key::
+cat /home/hadoop/.ssh/id_rsa.pub >>/home/hadoop/.ssh/authorized_keys
+
+now check for ssh localhost
+ssh localhost
+
+8. Configuring the Hadoop Master
+
+$nano ~/.bashrc
+
+export JAVA_HOME=/usr/lib/jvm/jdk1.8.0_251
+export HADOOP_HOME=/opt/hadoop
+export PATH=$PATH:$HADOOP_HOME/bin
+export PATH=$PATH:$HADOOP_HOME/sbin
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib"
+
+source ~/.bashrc
+
+nano $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+export JAVA_HOME=/usr/lib/jvm/jdk1.8.0_251
+
+nano $HADOOP_HOME/etc/hadoop/core-site.xml
+<property>
+<name>fs.default.name</name>
+<value>hdfs://localhost:9000</value>
+</property>
+
+nano $HADOOP_HOME/etc/hadoop/hdfs-site.xml
+
+<property>
+<name>dfs.replication</name>
+<value>1</value>
+</property>
+<property>
+<name>dfs.namenode.name.dir</name>
+<value>file:/opt/hadoopdata/namenode</value>
+</property>
+<property>
+<name>dfs.datanode.data.dir</name>
+<value>file:/opt/hadoopdata/datanode</value>
+</property>
+
+nano $HADOOP_HOME/etc/hadoop/yarn-site.xml
+
+<property>
+<name>yarn.nodemanager.aux-services</name>
+<value>mapreduce_shuffle</value>
+</property>
+<property>
+<name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+<value>org.apache.hadoop.mapred.ShuffleHandler</value>
+</property>
+
+$cp $HADOOP_HOME/etc/hadoop/mapred-site.xml.template $HADOOP_HOME/etc/hadoop/mapred-site.xml
+nano $HADOOP_HOME/etc/hadoop/mapred-site.xml
+<property>
+<name>mapreduce.framework.name</name>
+<value>yarn</value>
+</property>
+<property>
+  <name>yarn.app.mapreduce.am.env</name>
+  <value>HADOOP_MAPRED_HOME=/opt/hadoop</value>
+</property>
+<property>
+  <name>mapreduce.map.env</name>
+  <value>HADOOP_MAPRED_HOME=/opt/hadoop</value>
+</property>
+<property>
+  <name>mapreduce.reduce.env</name>
+  <value>HADOOP_MAPRED_HOME=/opt/hadoop</value>
+</property>
+
+
+9. Format namenode
+$hdfs namenode -format
+
+10. Now you can start HDFS
+>start-dfs.sh 
+>stop-dfs.sh
+
+11. Run this command to start yarn
+>start-yarn.sh
+>stop-yarn.sh
+
+13. Start jobhistory server::
+>$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh --config $HADOOP_HOME/etc/hadoop start historyserver
+>$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh --config $HADOOP_HOME/etc/hadoop stop historyserver
+>$mapred --daemon start
+>$mapred --daemon stop
+
+
+12. jps
+
+13.
+$ hadoop fs -mkdir /tmp
+$ hadoop fs -chmod -R 1777 /tmp
+
+14.
+$ hadoop fs -mkdir /user
+$ hadoop fs -chmod -R 1777 /user
+
+15.
+$ hadoop fs -mkdir /user/hadoop
+$ hadoop fs -chmod -R 1777 /user/hadoop
+
+16. To check your hdfs port use the following command in linux
+hdfs getconf -confKey fs.default.name
+
+
+
+
+HDFS Web UI::
+http://yourvmip:50070
+
+Hadoop Cluster Url
+http://yourvmip:8088/cluster
+
+Job History Server::
+http://yourvmip:19888
+
+ln -s /usr/share/java/mysql-connector-java.jar $SPARK_HOME/jars/mysql-connector-java.jar

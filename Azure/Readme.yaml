@@ -124,13 +124,16 @@ $ kubectl label node $node3 tier=production
 #Both applications will be scheduled on the same worker node.
 #CPU and memory resource constraints will be defined for both applications.
 
-$ kubectl create secret generic mysql-test-secret -n test --from-file=MYSQL_ROOT_PASSWORD=./yaml/mysql_root_password.txt --from-file=MYSQL_USER=./yaml/mysql_user.txt --from-file=MYSQL_PASSWORD=./yaml/mysql_password.txt --from-file=MYSQL_DATABASE=./yaml/mysql_database.txt
+ kubectl create secret generic mysql-test-secret -n test --from-file=MYSQL_ROOT_PASSWORD=./yaml/mysql_root_password.txt --from-file=MYSQL_USER=./yaml/mysql_user.txt --from-file=MYSQL_PASSWORD=./yaml/mysql_password.txt --from-file=MYSQL_DATABASE=./yaml/mysql_database.txt
 
 $ kubectl create secret generic mysql-prod-secret -n production --from-file=MYSQL_ROOT_PASSWORD=./yaml/mysql_root_password.txt --from-file=MYSQL_USER=./yaml/mysql_user.txt --from-file=MYSQL_PASSWORD=./yaml/mysql_password.txt --from-file=MYSQL_DATABASE=./yaml/mysql_database.txt
 
 $ kubectl apply -f ./yaml/wptest.yaml
 
 $ kubectl apply -f ./yaml/wpprod.yaml
+
+# Check
+kubectl port-forward deployment/wp-deployment -n test 8080:80
 
 #The wordpress application deployed in the "test" namespace will be exposed to the outside world via ingress as "testblog.example.com", and the wordpress application deployed in the "production" namespace as "companyblog.example.com".
 $ kubectl apply -f ./yaml/wpingress.yaml
