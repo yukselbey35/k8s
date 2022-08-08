@@ -1,21 +1,40 @@
 Hadoop Cluster  Commands - 42
 
+#Create Rg HadoopInsightClusterRG on the Azure
 
 
 
-sudo apt update
-sudo apt install ssh
-sudo apt install pdsh
-nano .bashrc
+#update system
+sudo apt update -y 
+sudo apt install ssh -y 
+sudo apt install pdsh -y 
+
+#Add pdsh to all bashrc
+nano .bashrc or vi .bashrc
 export PDSH_RCMD_TYPE=ssh
+
+#Create keygen for all VMs 
 ssh-keygen -t rsa -P ""
+#and add all them
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-ssh localhost
-sudo apt install openjdk-8-jdk
+
+#To verify that the localhost setup is done properly using the hdoop user to SSH to localhost, run the following command
+#login 
+ssh localhost 
+#If the java version is older than 1.8 then install java 1.8 or higher version. To install java 1.8 run following command:
+#instal java JDk
+sudo apt install openjdk-8-jdk -y 
 java -version
+#Download Hadoop 3.2.1
+sudo wget -P ~ https://archive.apache.org/dist/hadoop/common/hadoop-3.2.1/hadoop-3.2.1.tar.gz
 sudo wget -P ~ https://mirrors.sonic.net/apache/hadoop/common/hadoop-3.2.1/hadoop-3.2.1.tar.gz
+
+#Exctract it
 tar xzf hadoop-3.2.1.tar.gz
+#Rename
 mv hadoop-3.2.1 hadoop
+
+#add java home path
 nano ~/hadoop/etc/hadoop/hadoop-env.sh
 
 Goes in Hadoop-env.sh
@@ -23,49 +42,67 @@ Goes in Hadoop-env.sh
 	export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 
 
-
+#Move to hadoop folder to local
 sudo mv hadoop /usr/local/hadoop
+#set hadoop env path 
+sudo vi /etc/environment #or 
 sudo nano /etc/environment
 	
 	PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/local/hadoop/bin:/usr/local/hadoop/sbin"JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/jre"
 
-
+#Create hadoop user and set the password admin :-)
 sudo adduser hadoopuser
 sudo usermod -aG hadoopuser hadoopuser
 sudo chown hadoopuser:root -R /usr/local/hadoop/
 sudo chmod g+rwx -R /usr/local/hadoop/
 sudo adduser hadoopuser sudo
 
+
+#check Ip address eth0
+$ip addr 
+10.0.0.5 hadoop-slave1
+10.0.0.6 hadoop-slave2
+10.0.0.4 hadoop-master
+#hadoop-master
+
+#Add ip addr to all the VMs hosts
 sudo nano /etc/hosts
+#Check the hostname
 sudo nano /etc/hostname
+
+#reboot all the VMs
 sudo reboot
 
+#Change the user as => hadoopuser passwaord :-)admin
+su - hadoopuser 
 
-
-su - hadoopuser
+#create key on ly master
 ssh-keygen -t rsa
 
-
-
+#configure with only master to add key to slaves
 ssh-copy-id hadoopuser@hadoop-master
 ssh-copy-id hadoopuser@hadoop-slave1
 ssh-copy-id hadoopuser@hadoop-slave2
 
+#Configure on the master add the hadoopuser to rights to use sudo
+su - hadoop-master
+sudo usermod -aG hadoopuser hadoopuser
+sudo chown hadoopuser:root -R /usr/local/hadoop/
+sudo chmod g+rwx -R /usr/local/hadoop/
+sudo adduser hadoopuser sudo
+su - hadoopuser
 
 sudo nano /usr/local/hadoop/etc/hadoop/core-site.xml
-
-
+#add this propert in the configuration
 <property>
 <name>fs.defaultFS</name>
 <value>hdfs://hadoop-master:9000</value>
 </property>
 
 
+
 sudo nano /usr/local/hadoop/etc/hadoop/hdfs-site.xml
-
-
-
-
+#add this propert in the configuration
 <property>
 <name>dfs.namenode.name.dir</name><value>/usr/local/hadoop/data/nameNode</value>
 </property>
@@ -79,7 +116,7 @@ sudo nano /usr/local/hadoop/etc/hadoop/hdfs-site.xml
 
 
 
-
+#specify our workers hadoop-slave1 and hadoopslave-2
 sudo nano /usr/local/hadoop/etc/hadoop/workers
 
 hadoop-slave1
