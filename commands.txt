@@ -507,6 +507,7 @@ kubectl get nodes -o=jsonpath='{range .items[*]}{.metadata.name} {"\t"} {.status
 kubectl get nodes -o=custom-columns=<COLUMN NAME>:<JSON PATH>
 kubectl get nodes -o=custom-columns=NODE:.metadata.name # brings nodes list
 kubectl get nodes -o=custom-columns=NODE:.metadata.name ,CPU:.statuscapacity.cpu
+kubectl get nodes -o=custom-columns=NodeName:.metadata.name,PATCH_WINDOW:.metadata.labels.<label_name>
 
 kubectl get nodes --sort-by= .metadata.name
 kubectl get nodes --sort-by= .stataus.capacity.cpu
