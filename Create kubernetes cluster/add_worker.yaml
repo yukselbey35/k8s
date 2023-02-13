@@ -1,0 +1,47 @@
+---
+- name: Add Master Nodes to Cluster
+  hosts: masters
+  gather_facts: no
+
+  tasks:
+  - name: Install required packages
+    package:
+      name:
+        - kubeadm
+        - containerd
+    state: present
+    
+  - name: Copy join command from existing master nodes
+    shell: "kubeadm token create --print-join-command"
+    register: join_command
+    delegate_to: "{{ item }}"
+    with_items: "{{ groups['masters'][:3] }}"
+
+  - name: Join new master nodes to the cluster
+    shell: "{{ join_command.stdout_lines[0] }}"
+    become: yes
+    when: inventory_hostname in groups['masters'][3:]
+    
+  - name: Wait for nodes to join the cluster
+    shell: "kubectl wait --for=condition=ready node {{ inventory_hostname }}"
+    become: yes
+    when: inventory_hostname in groups['masters'][3:]
+    
+  - name: Mark new master nodes as unschedulable
+    shell: "kubectl cordon {{ inventory_hostname }}"
+    become: yes
+    when: inventory_hostname in groups['masters'][3:]
+    
+  - name: Add new master nodes to the HAProxy load balancer pool
+    # Add tasks here to add the new master nodes to the HAProxy load balancer pool
+    # This will depend on your specific load balancer configuration and setup.
+    
+  - name: Mark new master nodes as schedulable
+    shell: "kubectl uncordon {{ inventory_hostname }}"
+    become: yes
+    when: inventory_hostname in groups['masters'][3:]
+    
+  - name: Wait for nodes to become ready
+    shell: "kubectl wait --for=condition=ready node {{ inventory_hostname }}"
+    become: yes
+    when: inventory_hostname in groups['masters'][3:]
